@@ -1,0 +1,94 @@
+<html>
+
+<head>
+    <title>New Vegetable</title>
+    <link rel="stylesheet" href="dynamicVegCart.css">
+</head>
+
+<body>
+    <div style="display: flex;flex-direction: column;">
+        <form class="vegForm">
+
+            <label for="vegname">Name</label>
+            <input onchange="checkSaveEnabled()" type="text" id="vegname">
+
+            <label for="qty">Max Available Qty.</label>
+            <input onchange="checkSaveEnabled()" type="number" id="qty">
+
+            <label for="price">Price per unit</label>
+            <input onchange="checkSaveEnabled()" type="number" id="price">
+
+            <label for="imgpath">Image Path</label>
+            <input onchange="checkSaveEnabled()" type="text" id="imgpath">
+
+        </form>
+
+        <div style="display: flex;flex-direction: row;justify-content: center;">
+            <button id="saveBtn" onclick="saveVeg()" style="margin-right: 1em;" disabled>Save</button>
+            <button onclick="navBack()">Cancel</button>
+        </div>
+    </div>
+    <script>
+        function saveVeg() {
+            let obj = {};
+            obj["id"] = document.getElementById('vegname').value.toLowerCase();
+            obj["name"] = document.getElementById('vegname').value;
+            obj["cost"] = document.getElementById('price').value;
+            obj["maxOrdQty"] = document.getElementById('qty').value;
+            obj["imgPath"] = document.getElementById('imgpath').value;
+
+            let allVeggies = JSON.parse(localStorage.getItem('allVeggies'));
+            if (allVeggies && allVeggies.length > 0) {
+                let exstngVegIndex = allVeggies.findIndex(function (veg) {
+                    if (veg.id == document.getElementById('vegname').value.toLowerCase())
+                        return true;
+                    else
+                        return false;
+                });
+                console.log(exstngVegIndex);
+                if (exstngVegIndex > -1) {
+                    allVeggies.splice(exstngVegIndex, 1);
+                    localStorage.setItem('allVeggies',JSON.stringify(allVeggies));
+                    localStorage.setItem("newveg", JSON.stringify(obj));
+                    window.location.href = "VegStoree.html?add=true";
+                }
+                else {
+                    localStorage.setItem("newveg", JSON.stringify(obj));
+                    window.location.href = "VegStoree.html?add=true";
+                }
+            }
+            else {
+                localStorage.setItem("newveg", JSON.stringify(obj));
+                window.location.href = "VegStoree.html?add=true";
+            }
+
+        }
+
+        function navBack() {
+            window.location.href = "VegStoree.html?add=false";
+        }
+
+        function checkSaveEnabled() {
+            let allInputs = document.getElementsByTagName('input');
+            let btnDisbld = false;
+
+            for (let i = 0; i < allInputs.length; i++) {
+                if (!allInputs[i].value) {
+                    btnDisbld = true;
+                    break;
+                }
+            }
+
+            if (!btnDisbld) {
+                document.getElementById("saveBtn").removeAttribute('disabled');
+            }
+            else {
+                document.getElementById("saveBtn").disabled = true;
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>
